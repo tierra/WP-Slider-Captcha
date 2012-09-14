@@ -1,9 +1,19 @@
 $(function() {
     if (!window.jQuery) {
-        console.log('jQuery was not included!');
+        try {
+            document.write('<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></scr'+'ipt>');
+        }
+        catch (e) {
+            console.log('Error occurred: ' +e.message);
+        }
     }
     else if (!window.jQuery.ui) {
-        console.log('jQuery UI was not loaded!');
+        try {
+            document.write('<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></scr'+'ipt>');
+        }
+        catch (e) {
+            console.log('jQuery UI was not loaded!');
+        }
     }
     else {
         var $form = $('#commentform');
