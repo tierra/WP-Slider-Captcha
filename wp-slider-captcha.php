@@ -4,7 +4,7 @@
     Plugin Name: WP Slider Captcha
     Plugin URI: http://ditoforge.com/
     Description: jQuery UI Slider Captcha
-    Version: 1.1.0
+    Version: 1.2.0
     Author: Brian J. Rogers
     Author URI: http://ditoforge.com
     License: GPLv3
@@ -28,7 +28,44 @@
     51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     */
     
+    add_action('init','wpsc_scripts');
+    add_action('admin_menu', 'wpsc_admin_menu');
 
+    function wpsc_scripts() {
+        $handle = "wpsc-scripts";
+        $src    = plugins_url('/wp-slider-captcha.js', __FILE__);
+        $deps   = array('jquery', 'jquery-ui-slider'); 
+
+        wp_register_script($handle, $src, $deps);
+
+        wp_enqueue_script('jquery');
+        wp_enqueue_script('jquery-ui-slider');
+        wp_enqueue_script($handle);
+
+        wp_register_style(
+            'wpsc-styles',
+            plugins_url('/wp-slider-captcha.css', __FILE__)
+        );
+
+        wp_enqueue_style('wpsc-styles');
+    }
+  
+    function wpsc_admin_menu() {
+        // create a top level menu entry
+
+        // use this to add a top level admin menu item
+        //add_menu_page()
+
+        add_options_page(
+             'WP Slider Captcha Options',   // title of the page
+             'WP Slider Captcha',           // text to be used in options menu
+             'administrator',               // permission/role that is the minimum for this
+             'wp_slider_captcha',           // menu slug
+             'wp_slider_options'            // function callback
+        );
+    }
+
+    /*
     // minimum required version check
     function minimum_version_check() {
 
@@ -55,72 +92,15 @@
         }
     }
 
-    // kick it off by checking the version
-    add_action( 'admin_init', 'captcha' );
-
-
     // register your settings with Wordpress to be accessible later
     function sc_register_settings() {
         register_setting( 'sc_settings_group', 'threshhold' );
         register_setting( 'sc_settings_group', 'form-id' );
         register_setting( 'sc_settings_group', 'button-id' );
     }
+    */
 
-    
-    // main function, called on initialization
-    function captcha() {
-
-        // register the settings in the database
-        add_action( 'admin_init', 'sc_register_settings' );
-
-        // register your script, where to find the JavaScript file, and dependencies
-        wp_register_script(
-            'wp_slider_captcha',
-            plugins_url(
-                '/wp-slider-captcha/wp-slider-captcha.js'
-            ),
-            array(
-              'jquery',
-              'jquery-ui'
-            ),
-            '1.1'
-        );
-
-        // register your CSS
-        wp_register_style(
-            'wp-slider-captcha',
-            plugins_url(
-                '/wp-slider-captcha/wp-slider-captcha.css'
-            )
-        );
-        
-        
-        wp_enqueue_style('wp-slider-captcha');
-        wp_enqueue_script('wp_slider_captcha');
-
-        add_action(
-           'admin_menu',        // a hook for adding to the admin menu
-           'admin_menu_init'    // what function to use for that hook
-        );
-
-    }
-
-
-    //
-    function admin_menu_init() {
-
-        add_options_page(
-             'WP Slider Captcha Options',   // title of the page
-             'WP Slider Captcha',           // foo
-             'manage_options',              // permission/role that is the minimum for this
-             'wp_slider_captcha',           // foo
-             'wp_slider_options'            // function callback
-        );
-
-    }
-
-
-    //
+    // function for creating the options page
     function wp_slider_options() {
 
         echo '<div class="wrap">

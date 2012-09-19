@@ -1,4 +1,4 @@
-$(function() {
+jQuery(function($) {
     if (!window.jQuery) {
         try {
             document.write('<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></scr'+'ipt>');
@@ -12,7 +12,7 @@ $(function() {
             document.write('<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></scr'+'ipt>');
         }
         catch (e) {
-            console.log('jQuery UI was not loaded!');
+            console.log('Error occurred: ' +e.message);
         }
     }
     else {
