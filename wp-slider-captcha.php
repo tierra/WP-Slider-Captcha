@@ -90,6 +90,25 @@
         register_setting( 'element', '' );
     }
 
+    // function to pass the settings to JavaScript
+    function wpsc_passon() {
+        // nested array of data to pass to our JavaScript
+        $data = array(
+            array( 'threshhold', get_option( 'threshhold' ) ),
+            array( 'form-id', get_option( 'form-id' ) ),
+            array( 'button-id', get_option( 'button-id' ) ),
+            array( 'no-id', get_option( 'no-id' ) ),
+            array( 'element', get_option( 'element' ) )
+        );
+
+        // pass the variables to javascript as JSON data
+        wp_localize_script(
+            'wpsc-scripts',                 // script to pass variables to
+            'wpscscripts',                 // object name to give to javascript
+            $data                           // data to pass in
+        );
+    }
+
     // function for creating the options page
     function wp_slider_options() {
 
@@ -120,20 +139,8 @@
             );
         }
 
-        $data = array(
-            array( 'threshhold', get_option( 'threshhold' ) ),
-            array( 'form-id', '#commentform' ),
-            array( 'button-id', '' ),
-            array( 'no-id', false ),
-            array( 'element', '' )
-        );
-
-        // pass the variables to javascript as JSON data
-        wp_localize_script(
-            'wpsc-scripts',                 // script to pass variables to
-            'wpscscripts',                 // object name to give to javascript
-            $data                           // data to pass in
-        );
+        // hook in the settings
+        add_action( 'init', 'wpsc_passon' );
 
         //else {
             echo '<div class="wrap">
