@@ -16,21 +16,19 @@ jQuery(function($) {
         }
     }
     else {
-        console.log(wpscsettings);
+        var $form      = $('#' + wpsc_settings.form_id),
+            threshold = wpsc_settings.threshold,
+            $captcha   = $('<div id="wp-slider-captcha"><p id="wp-slider-info">Drag to the right more than '+threshhold+'%</p></div>');
 
-        /*
-        var $form = $('#commentform');
-        
-        $form.find('input[type="submit"]').remove();
-        
-        var $captcha = $('<div id="wp-slider-captcha"><p id="wp-slider-info">Drag to the right more than 60%</p></div>');
+        $form.find(':submit').remove();
+
         $captcha.slider({
             
             // whenever it's value is changed (after button release)
             change: function(evt, ui) {
                 
                 // if over given value...
-                if(ui.value > 60) {
+                if(ui.value > threshold) {
                     $form.submit();
                 }
                 
@@ -39,7 +37,7 @@ jQuery(function($) {
                 }
             }
         });
-        $('#commentform').append($captcha);
-        */
+
+        $form.append($captcha);
     }
 });
