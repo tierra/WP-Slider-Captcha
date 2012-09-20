@@ -34,18 +34,18 @@
         'wpsc_scripts'      // the attached function to run
     );
 
+    // settings given to JS from PHP
+    add_action( 'init', 'wpsc_passon' );
+
     // for the options page in the admin menu
-    add_action(
-        'admin_menu',
-        'wpsc_admin_menu'
-    );
+    add_action( 'admin_menu', 'wpsc_admin_menu' );
 
     function wpsc_scripts() {
 
         // register our javascript with wordpress
         wp_register_script(
             'wpsc-scripts',                                     // slug or handle to reference this
-            plugins_url( '/wp-slider-captcha.js', __FILE__ ),     // which file, location (__FILE__ references this directory)
+            plugins_url( '/wp-slider-captcha.js', __FILE__ ),   // which file, location (__FILE__ references this directory)
             array(
                 'jquery',                                       // jquery is required
                 'jquery-ui-slider'                              // jquery ui slider is as well
@@ -59,7 +59,7 @@
 
         // registering a stylesheet
         wp_register_style(
-            'wpsc-styles',                                      // again, the slug or handle
+            'wpsc-styles',                                        // again, the slug or handle
             plugins_url( '/wp-slider-captcha.css', __FILE__ )     // same as above
         );
 
@@ -77,34 +77,47 @@
              'wp_slider_options'            // function callback
         );
 
+
+
         // menu is created, now register the functions
         add_action( 'admin_init', 'wpsc_settings' );
     }
 
     // register your settings with Wordpress to be accessible later
     function wpsc_settings() {
-        register_setting( 'sc_settings_group', 'threshhold' );
-        register_setting( 'sc_settings_group', 'form-id' );
-        register_setting( 'sc_settings_group', 'button-id' );
-        register_setting( 'sc_settings_group', 'no-id' );
-        register_setting( 'element', '' );
+        add_settings_field(
+            'threshold',    // id to attach to the input field
+            'Threshold',    // label for the input field
+            'thresh',       // callback function
+            'wpsc'          // what page to add them to, must match menu slug
+        );
+
+        add_settings_field( 'form-id', 'Form ID', '', 'wpsc' );
+
+        register_setting(
+            'sc_settings_group',    // id for the group, just a slug
+            'threshold'             // data object name/id
+        );
+
+        register_setting( 'sc_settings_group', 'form_id' );
+    }
+
+    function thresh() {
+        echo '<input type="text">';
     }
 
     // function to pass the settings to JavaScript
     function wpsc_passon() {
         // nested array of data to pass to our JavaScript
         $data = array(
-            array( 'threshhold', get_option( 'threshhold' ) ),
-            array( 'form-id', get_option( 'form-id' ) ),
-            array( 'button-id', get_option( 'button-id' ) ),
-            array( 'no-id', get_option( 'no-id' ) ),
-            array( 'element', get_option( 'element' ) )
+            array( 'threshold', get_option( 'threshold' ) ),
+            array( 'form_id', get_option( 'form-id' ) )
         );
 
         // pass the variables to javascript as JSON data
         wp_localize_script(
             'wpsc-scripts',                 // script to pass variables to
-            'wpscscripts',                 // object name to give to javascript
+            'wpsc_settings',                // object name to give to javascript
             $data                           // data to pass in
         );
     }
@@ -112,121 +125,34 @@
     // function for creating the options page
     function wp_slider_options() {
 
-        if( !get_option( 'threshhold' ) || !get_option( 'form-id' ) || !get_option( 'button-id' ) ) {
+        /*if( !get_option( 'threshold' ) || !get_option( 'form-id' ) || !get_option( 'button-id' ) ) {
             update_option(
-                'threshhold',               // variable name
-                '60'                        // variable value
+                'threshold',               // variable name
+                '60'                       // variable value
             );
 
-            update_option(
-                'form-id',
-                'commentform'
-            );
-            
-            update_option(
-                'button-id',
-                ''
-            );
+            update_option( 'form-id', 'commentform' );
+        }*/
 
-            update_option(
-                'no-id',
-                false
-            );
+        add_settings_section(
+            'foo',
+            'Foo',
+            'foo',
+            'wpsc'
+        );
 
-            update_option(
-                'element',
-                ''
-            );
-        }
+        
+        add_settings_field(
+            'threshold',
+            'Threshold:',
+            'threshold_setting',
+            __FILE__,
+            'sc_settings_group',
+            array( 'label_for' => 'threshold')
+        );
+    }
 
-        // hook in the settings
-        add_action( 'init', 'wpsc_passon' );
-
-        //else {
-            echo '<div class="wrap">
-                 '.screen_icon().'
-                <h2>WP Slider Captcha Options</h2>
-                <p>Options to customize your install of WP Slider Captcha</p>
-            </div>
-            <div class="wrap">
-                <form action="options.php" method="post">
-                    '. settings_fields( 'sc_settings_group' ) .'
-                    <table class="form-table">
-                        <tbody>
-                            <tr valign="top">
-                                <th scope="row">Threshold</th>
-                                <td>
-                                    <fieldset>
-                                        <legend class="screen-reader-text">
-                                            <span>Threshold</span>
-                                        </legend>
-                                        <label for="threshhold">
-                                            <input id="threshold" type="input" value="'.get_option( 'threshhold' ).'" name="threshhold">
-                                            <p>
-                                                <em>What percent point to slide past</em>
-                                                <br>
-                                                <em>Default is 60, i.e. 60% of slider width</em>
-                                            </p>
-                                        </label>
-                                    </fieldset>
-                                </td>
-                            </tr>
-                            <tr valign="top">
-                                <th scrope="row">Form ID</th>
-                                <td>
-                                    <fieldset>
-                                        <legend class="screen-reader-text">
-                                            <span>Form ID</span>
-                                        </legend>
-                                        <label for="form-id">
-                                            <input id="form-id" type="input" value="'.get_option( 'form-id' ).'" name="form-id">
-                                            <p>
-                                                <em>Default is "commentform" (without quotes)</em>
-                                            </p>
-                                        </label>
-                                    </fieldset>
-                                </td>
-                            </tr>
-                            <tr valign="top">
-                                <th scrope="row">Submit Button ID</th>
-                                <td>
-                                    <fieldset>
-                                        <legend class="screen-reader-text">
-                                            <span>Submit Button ID</span>
-                                        </legend>
-                                        <label for="submit-button-id">
-                                            <input id="submit-button-id" type="input" value="'.get_option( 'button-id' ).'" name="submit-button-id">
-                                            <p>
-                                                <em>Default is blank</em>
-                                            </p>
-                                        </label>
-                                        <legend class="screen-reader-text">
-                                            <span>No ID for submit button</span>
-                                        </legend>
-                                        <label for="no-id">
-                                            <input id="no-id" type="checkbox" value="0" name="no-id">
-                                            I don\'t have an ID on my submit button.
-                                        </label>
-                                    </fieldset>
-                                </td>
-                            </tr>
-                            <tr valign="top">
-                                <th scope="row">&nbsp;</th>
-                                <td>
-                                    <fieldset>
-                                        <legend class="screen-reader-text">
-                                            <span>Save The Settings</span>
-                                        </legend>
-                                        <label>
-                                            <button type="submit" class="button-primary">Save These Settings</button>
-                                        </label>
-                                    </fieldset>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </form>';
-            echo '</div>';
-        //}
+    function threshold_setting() {
+        echo '<p>Foo!!!!</p>';
     }
 ?>
