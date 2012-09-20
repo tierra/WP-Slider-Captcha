@@ -16,6 +16,9 @@ jQuery(function($) {
         }
     }
     else {
+        console.log(wpscsettings);
+
+        /*
         var $form = $('#commentform');
         
         $form.find('input[type="submit"]').remove();
@@ -37,5 +40,6 @@ jQuery(function($) {
             }
         });
         $('#commentform').append($captcha);
+        */
     }
 });
