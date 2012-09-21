@@ -16,8 +16,8 @@ jQuery(function($) {
         }
     }
     else {
-        var $form      = $('#' + wpsc_settings['form_id']),
-            threshold  = wpsc_settings['threshold'],
+        var $form      = $('#' + wpsc_settings['wpsc_form_id']),
+            threshold  = wpsc_settings['wpsc_threshold'],
             $captcha   = $('<div id="wp-slider-captcha"><p id="wp-slider-info">Drag to the right more than '+threshold+'%</p></div>');
 
         $form.find(':submit').remove();

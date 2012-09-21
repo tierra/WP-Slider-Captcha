@@ -87,7 +87,7 @@
              'WP Slider Captcha',           // text to be used in options menu
              'manage_options',              // permission/role that is the minimum for this
              'wpsc',                        // menu slug
-             'wp_slider_options'            // function callback
+             'wpsc_slider_options'            // function callback
         );
 
     }
@@ -99,24 +99,24 @@
     function wpsc_settings() {
 
         register_setting(
-            'sc_settings_group',    // id for the group, just a slug
-            'threshold',            // data object name/id
-            'threshold_sanitize'    // callback function for sanitizing
+            'wpsc_settings_group',    // id for the group, just a slug
+            'wpsc_threshold',            // data object name/id
+            'wpsc_threshold_sanitize'    // callback function for sanitizing
         );
 
-        register_setting( 'sc_settings_group', 'form_id', 'form_sanitize' );
+        register_setting( 'wpsc_settings_group', 'wpsc_form_id', 'form_sanitize' );
 
         add_settings_section(
-            'sc_settings_group',
+            'wpsc_settings_group',
             'Main Settings',
             'plugin_section_text',
             'wpsc'
         );
 
         add_settings_field(
-            'threshold',
+            'wpsc_threshold',
             'Threshold:',
-            'threshold_callback',
+            'wpsc_threshold_callback',
             'wpsc',
             'sc_settings_group',
             array('foobarbaz')
@@ -128,7 +128,7 @@
         echo "<p>Section text</p>";
     }
 
-    function threshold_callback() {
+    function wpsc_threshold_callback() {
         echo "<p>threshold callback</p>";
     }
 
@@ -137,7 +137,7 @@
 
 
 
-    function threshold_sanitize($input) {
+    function wpsc_threshold_sanitize($input) {
         $trimmed = trim($input);
 
         if( !is_numeric($trimmed) || $trimmed > 100 || $trimmed < 0 ) {
@@ -147,7 +147,7 @@
         return $trimmed;
     }
 
-    function form_sanitize($str) {
+    function wpsc_form_sanitize($str) {
         $string = trim($str);
 
         $pattern = '/^[\w]+[-]?+[\w]+$/';
@@ -168,8 +168,8 @@
 
         // nested array of data to pass to our JavaScript
         $data = array(
-            'threshold' => get_option( 'threshold' ),
-            'form_id'   => get_option( 'form-id' )
+            'wpsc_threshold' => get_option( 'wpsc_threshold' ),
+            'wpsc_form_id'   => get_option( 'wpsc_form_id' )
         );
 
         // pass the variables to javascript as JSON data
@@ -184,7 +184,7 @@
 
 
     // function for creating the options page
-    function wp_slider_options() {
+    function wpsc_slider_options() {
 
         echo '<div class="wrap">' .
              screen_icon() .
@@ -193,7 +193,7 @@
         </div>
         <div class="wrap">
             <form action="options.php" method="post">';
-                settings_fields( 'sc_settings_group' );
+                settings_fields( 'wpsc_settings_group' );
 
                 echo '<table class="form-table">
                     <tbody>
@@ -205,7 +205,7 @@
                                         <span>Threshold</span>
                                     </legend>
                                     <label for="threshold">
-                                        <input id="threshold" type="input" value="'. get_option( 'threshold' ) .'" name="threshold">
+                                        <input id="threshold" type="input" value="'. get_option( 'wpsc_threshold' ) .'" name="threshold">
                                         <p>
                                             <em>What percent point to slide past</em>
                                             <br>
@@ -223,7 +223,7 @@
                                         <span>Form ID</span>
                                     </legend>
                                     <label for="form-id">
-                                        <input id="form-id" type="input" value="'. get_option( 'form_id' ) .'" name="form-id">
+                                        <input id="form-id" type="input" value="'. get_option( 'wpsc_form_id' ) .'" name="form-id">
                                         <p>
                                             <em>Default is "commentform" (without quotes)</em>
                                         </p>
@@ -239,7 +239,7 @@
                                         <span>Save The Settings</span>
                                     </legend>
                                     <label>';
-                                        do_settings_sections('sc_settings_group');
+                                        do_settings_sections('wpsc_settings_group');
                                         submit_button();
                                     echo '</label>
                                 </fieldset>
