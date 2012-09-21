@@ -125,11 +125,11 @@
     }
 
     function plugin_section_text() {
-        echo "tra la la";
+        echo "<p>Section text</p>";
     }
 
     function threshold_callback() {
-        echo "trolololol";
+        echo "<p>threshold callback</p>";
     }
 
 
