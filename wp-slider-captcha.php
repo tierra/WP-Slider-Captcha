@@ -28,6 +28,8 @@
     51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     */
     
+
+
     // kick it all off
     add_action(
         'init',             // action hook, e.g. when to execute the attached function
@@ -35,17 +37,19 @@
     );
 
 
+
     // settings given to JS from PHP
     add_action( 'init', 'wpsc_passon' );
+
 
 
     // for the options page in the admin menu
     add_action( 'admin_menu', 'wpsc_admin_menu' );
 
 
+
     // menu is created, now register the functions
     add_action( 'admin_init', 'wpsc_settings' );
-
 
 
 
@@ -94,15 +98,14 @@
 
 
 
-
     // register your settings with Wordpress to be accessible later
     function wpsc_settings() {
 
         add_settings_section(
-            'wpsc_settings_group',      // id of the group
-            'Main Settings',            // title of the section
-            'plugin_section_text',      // obligatory callback function for rendering
-            'wpsc'                      // what page (slug) to add it to
+            'wpsc_settings_group',          // id of the group
+            'WP Slider Captcha Settings',   // title of the section
+            'plugin_section_text',          // obligatory callback function for rendering
+            'wpsc'                          // what page (slug) to add it to
         );
 
         register_setting(
@@ -111,7 +114,11 @@
             'wpsc_threshold_sanitize'   // callback function for sanitizing
         );
 
-        register_setting( 'wpsc_settings_group', 'wpsc_form_id', 'form_sanitize' );
+        register_setting(
+            'wpsc_settings_group',
+            'wpsc_form_id',
+            'form_sanitize'
+        );
 
         add_settings_field(
             'wpsc_threshold',           // id for this setting
@@ -121,15 +128,23 @@
             'wpsc_settings_group'       // settings group to attach to 
         );
 
-        add_settings_field('wpsc_form_id', 'Form ID', 'wpsc_form_id_callback', 'wpsc', 'wpsc_settings_group');
+        add_settings_field(
+            'wpsc_form_id',
+            'Form ID',
+            'wpsc_form_id_callback',
+            'wpsc',
+            'wpsc_settings_group'
+        );
 
     }
 
 
-    // to be honest, I'm not sure how this one will play out
+
+    // description area for your options page
     function plugin_section_text() {
-        echo "<p>Section text</p>";
+        echo "<p>You can control when it counts as accepted, and what form to put it in!</p>";
     }
+
 
 
     // render the following for the threshold
@@ -143,6 +158,7 @@
     <?php }
 
 
+
     // render the following for the form id field
     function wpsc_form_id_callback() { ?>
         <input id="form-id" type="input" value="<?php get_option( 'wpsc_form_id', 'commentform' ); ?>" name="wpsc_form_id">
@@ -150,8 +166,6 @@
             <em>Default is "commentform" (without quotes)</em>
         </p>
     <?php }
-
-
 
 
 
@@ -184,8 +198,6 @@
 
 
 
-
-
     // function to pass the settings to JavaScript
     function wpsc_passon() {
 
@@ -212,11 +224,10 @@
         echo '<div class="wrap">
             <form action="options.php" method="post">';
                 settings_fields( 'wpsc_settings_group' );
-                do_settings_sections( 'wpsc_settings_group' );
+                do_settings_sections( 'wpsc' );
                 submit_button();
             echo '</form>
         </div>';
 
     }
-
 ?>
