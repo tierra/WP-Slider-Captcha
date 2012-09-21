@@ -1,6 +1,3 @@
-# Main Travis CI configuration file for wordpress-plugin tests
-# https://github.com/benbalter/wordpress-plugin-tests
-
 # Tell Travis CI we're using PHP
 language: php
 

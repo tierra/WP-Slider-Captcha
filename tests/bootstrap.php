@@ -12,7 +12,11 @@
  */
 
 $GLOBALS['wp_tests_options'] = array(
-	'active_plugins' => array( 'wp-slider-captcha/wp-slider-captcha.php' ),
+	'active_plugins' => array( 'WP-Slider-Captcha/wp-slider-captcha.php' ),
 );
 
-require getenv( 'WP_TESTS_DIR' ) . '/bootstrap.php';
+if( false !== getenv( 'WP_TESTS_DIR' ) ) {
+	require getenv( 'WP_TESTS_DIR' ) . '/bootstrap.php';
+} else {
+	require dirname( dirname( dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) ) ) . '/bootstrap.php';
+}
