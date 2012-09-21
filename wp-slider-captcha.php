@@ -34,11 +34,20 @@
         'wpsc_scripts'      // the attached function to run
     );
 
+
     // settings given to JS from PHP
     add_action( 'init', 'wpsc_passon' );
 
+
     // for the options page in the admin menu
     add_action( 'admin_menu', 'wpsc_admin_menu' );
+
+
+    // menu is created, now register the functions
+    add_action( 'admin_init', 'wpsc_settings' );
+
+
+
 
     function wpsc_scripts() {
 
@@ -65,7 +74,11 @@
 
         // and now give it to wordpress to load
         wp_enqueue_style( 'wpsc-styles' );
+
     }
+
+
+
   
     function wpsc_admin_menu() {
 
@@ -77,22 +90,13 @@
              'wp_slider_options'            // function callback
         );
 
-
-
-        // menu is created, now register the functions
-        add_action( 'admin_init', 'wpsc_settings' );
     }
+
+
+
 
     // register your settings with Wordpress to be accessible later
     function wpsc_settings() {
-        add_settings_field(
-            'threshold',    // id to attach to the input field
-            'Threshold',    // label for the input field
-            'thresh',       // callback function
-            'wpsc'          // what page to add them to, must match menu slug
-        );
-
-        add_settings_field( 'form-id', 'Form ID', '', 'wpsc' );
 
         register_setting(
             'sc_settings_group',    // id for the group, just a slug
@@ -100,59 +104,100 @@
         );
 
         register_setting( 'sc_settings_group', 'form_id' );
+
     }
 
-    function thresh() {
-        echo '<input type="text">';
-    }
+
+
 
     // function to pass the settings to JavaScript
     function wpsc_passon() {
+
         // nested array of data to pass to our JavaScript
         $data = array(
-            array( 'threshold', get_option( 'threshold' ) ),
-            array( 'form_id', get_option( 'form-id' ) )
+            'threshold' => get_option( 'threshold' ),
+            'form_id'   => get_option( 'form-id' )
         );
 
         // pass the variables to javascript as JSON data
         wp_localize_script(
-            'wpsc-scripts',                 // script to pass variables to
-            'wpsc_settings',                // object name to give to javascript
-            $data                           // data to pass in
+            'wpsc-scripts',     // script to pass variables to
+            'wpsc_settings',    // object name to give to javascript
+            $data               // data to pass in
         );
+
     }
+
+
 
     // function for creating the options page
     function wp_slider_options() {
 
-        /*if( !get_option( 'threshold' ) || !get_option( 'form-id' ) || !get_option( 'button-id' ) ) {
-            update_option(
-                'threshold',               // variable name
-                '60'                       // variable value
-            );
+        echo '<div class="wrap">' .
+             screen_icon() .
+            '<h2>WP Slider Captcha Options</h2>
+            <p>Options to customize your install of WP Slider Captcha</p>
+        </div>
+        <div class="wrap">
+            <form action="options.php" method="post">';
+                settings_fields( 'sc_settings_group' );
+                echo '<table class="form-table">
+                    <tbody>
+                        <tr valign="top">
+                            <th scope="row">Threshold</th>
+                            <td>
+                                <fieldset>
+                                    <legend class="screen-reader-text">
+                                        <span>Threshold</span>
+                                    </legend>
+                                    <label for="threshhold">
+                                        <input id="threshold" type="input" value="'. get_option( 'threshhold' ) .'" name="threshhold">
+                                        <p>
+                                            <em>What percent point to slide past</em>
+                                            <br>
+                                            <em>Default is 60, i.e. 60% of slider width</em>
+                                        </p>
+                                    </label>
+                                </fieldset>
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <th scrope="row">Form ID</th>
+                            <td>
+                                <fieldset>
+                                    <legend class="screen-reader-text">
+                                        <span>Form ID</span>
+                                    </legend>
+                                    <label for="form-id">
+                                        <input id="form-id" type="input" value="'. get_option( 'form-id' ) .'" name="form-id">
+                                        <p>
+                                            <em>Default is "commentform" (without quotes)</em>
+                                        </p>
+                                    </label>
+                                </fieldset>
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <th scope="row">&nbsp;</th>
+                            <td>
+                                <fieldset>
+                                    <legend class="screen-reader-text">
+                                        <span>Save The Settings</span>
+                                    </legend>
+                                    <label>';
+                                        do_settings_sections('sc_settings_group');
+                                        submit_button();
+                                    echo '</label>
+                                </fieldset>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>';
 
-            update_option( 'form-id', 'commentform' );
-        }*/
-
-        add_settings_section(
-            'foo',
-            'Foo',
-            'foo',
-            'wpsc'
-        );
-
-        
-        add_settings_field(
-            'threshold',
-            'Threshold:',
-            'threshold_setting',
-            __FILE__,
-            'sc_settings_group',
-            array( 'label_for' => 'threshold')
-        );
     }
 
-    function threshold_setting() {
-        echo '<p>Foo!!!!</p>';
-    }
+
+
 ?>
