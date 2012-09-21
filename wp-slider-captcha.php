@@ -79,7 +79,7 @@
 
 
 
-  
+    // add a sub-menu item for this page
     function wpsc_admin_menu() {
 
         add_options_page(
@@ -87,7 +87,7 @@
              'WP Slider Captcha',           // text to be used in options menu
              'manage_options',              // permission/role that is the minimum for this
              'wpsc',                        // menu slug
-             'wpsc_slider_options'            // function callback
+             'wpsc_slider_options'          // function callback
         );
 
     }
@@ -98,59 +98,82 @@
     // register your settings with Wordpress to be accessible later
     function wpsc_settings() {
 
+        add_settings_section(
+            'wpsc_settings_group',      // id of the group
+            'Main Settings',            // title of the section
+            'plugin_section_text',      // obligatory callback function for rendering
+            'wpsc'                      // what page (slug) to add it to
+        );
+
         register_setting(
-            'wpsc_settings_group',    // id for the group, just a slug
-            'wpsc_threshold',            // data object name/id
-            'wpsc_threshold_sanitize'    // callback function for sanitizing
+            'wpsc_settings_group',      // what group it belongs to
+            'wpsc_threshold',           // data object name/id
+            'wpsc_threshold_sanitize'   // callback function for sanitizing
         );
 
         register_setting( 'wpsc_settings_group', 'wpsc_form_id', 'form_sanitize' );
 
-        add_settings_section(
-            'wpsc_settings_group',
-            'Main Settings',
-            'plugin_section_text',
-            'wpsc'
+        add_settings_field(
+            'wpsc_threshold',           // id for this setting
+            'Threshold:',               // label
+            'wpsc_threshold_callback',  // callback function for rendering
+            'wpsc',                     // page to add this setting to
+            'wpsc_settings_group'       // settings group to attach to 
         );
 
-        add_settings_field(
-            'wpsc_threshold',
-            'Threshold:',
-            'wpsc_threshold_callback',
-            'wpsc',
-            'sc_settings_group',
-            array('foobarbaz')
-        );
+        add_settings_field('wpsc_form_id', 'Form ID', 'wpsc_form_id_callback', 'wpsc', 'wpsc_settings_group');
 
     }
 
+
+    // to be honest, I'm not sure how this one will play out
     function plugin_section_text() {
         echo "<p>Section text</p>";
     }
 
-    function wpsc_threshold_callback() {
-        echo "<p>threshold callback</p>";
-    }
+
+    // render the following for the threshold
+    function wpsc_threshold_callback() { ?>
+        <input id="threshold" type="input" value="<?php get_option( 'wpsc_threshold', 60 ); ?>" name="wpsc_threshold">
+        <p>
+            <em>What percent point to slide past</em>
+            <br>
+            <em>Default is 60, i.e. 60% of slider width</em>
+        </p>
+    <?php }
+
+
+    // render the following for the form id field
+    function wpsc_form_id_callback() { ?>
+        <input id="form-id" type="input" value="<?php get_option( 'wpsc_form_id', 'commentform' ); ?>" name="wpsc_form_id">
+        <p>
+            <em>Default is "commentform" (without quotes)</em>
+        </p>
+    <?php }
 
 
 
 
 
-
+    // make sure they only submit an integer between 1 and 100
     function wpsc_threshold_sanitize($input) {
-        $trimmed = trim($input);
+        $trimmed = (int) trim($input);
 
-        if( !is_numeric($trimmed) || $trimmed > 100 || $trimmed < 0 ) {
+        if( !is_numeric($trimmed) || $trimmed > 101 || $trimmed < 0 ) {
             $trimmed = 60;
         }
 
         return $trimmed;
     }
 
+
+
+    // regex to keep the id of the form within recommendataion
+    // can be letters and have hyphens in it
     function wpsc_form_sanitize($str) {
         $string = trim($str);
 
-        $pattern = '/^[\w]+[-]?+[\w]+$/';
+        $pattern = '/^[\w]+[-]?+[\w]+$/gim';
 
         if( !preg_match( $pattern, $string ) ) {
             $string = 'commentform';
@@ -186,72 +209,14 @@
     // function for creating the options page
     function wpsc_slider_options() {
 
-        echo '<div class="wrap">' .
-             screen_icon() .
-            '<h2>WP Slider Captcha Options</h2>
-            <p>Options to customize your install of WP Slider Captcha</p>
-        </div>
-        <div class="wrap">
+        echo '<div class="wrap">
             <form action="options.php" method="post">';
                 settings_fields( 'wpsc_settings_group' );
-
-                echo '<table class="form-table">
-                    <tbody>
-                        <tr valign="top">
-                            <th scope="row">Threshold</th>
-                            <td>
-                                <fieldset>
-                                    <legend class="screen-reader-text">
-                                        <span>Threshold</span>
-                                    </legend>
-                                    <label for="threshold">
-                                        <input id="threshold" type="input" value="'. get_option( 'wpsc_threshold' ) .'" name="threshold">
-                                        <p>
-                                            <em>What percent point to slide past</em>
-                                            <br>
-                                            <em>Default is 60, i.e. 60% of slider width</em>
-                                        </p>
-                                    </label>
-                                </fieldset>
-                            </td>
-                        </tr>
-                        <tr valign="top">
-                            <th scrope="row">Form ID</th>
-                            <td>
-                                <fieldset>
-                                    <legend class="screen-reader-text">
-                                        <span>Form ID</span>
-                                    </legend>
-                                    <label for="form-id">
-                                        <input id="form-id" type="input" value="'. get_option( 'wpsc_form_id' ) .'" name="form-id">
-                                        <p>
-                                            <em>Default is "commentform" (without quotes)</em>
-                                        </p>
-                                    </label>
-                                </fieldset>
-                            </td>
-                        </tr>
-                        <tr valign="top">
-                            <th scope="row">&nbsp;</th>
-                            <td>
-                                <fieldset>
-                                    <legend class="screen-reader-text">
-                                        <span>Save The Settings</span>
-                                    </legend>
-                                    <label>';
-                                        do_settings_sections('wpsc_settings_group');
-                                        submit_button();
-                                    echo '</label>
-                                </fieldset>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </form>
+                do_settings_sections( 'wpsc_settings_group' );
+                submit_button();
+            echo '</form>
         </div>';
 
     }
-
-
 
 ?>
