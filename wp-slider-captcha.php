@@ -100,12 +100,65 @@
 
         register_setting(
             'sc_settings_group',    // id for the group, just a slug
-            'threshold'             // data object name/id
+            'threshold',            // data object name/id
+            'threshold_sanitize'    // callback function for sanitizing
         );
 
-        register_setting( 'sc_settings_group', 'form_id' );
+        register_setting( 'sc_settings_group', 'form_id', 'form_sanitize' );
+
+        add_settings_section(
+            'sc_settings_group',
+            'Main Settings',
+            'plugin_section_text',
+            'wpsc'
+        );
+
+        add_settings_field(
+            'threshold',
+            'Threshold:',
+            'threshold_callback',
+            'wpsc',
+            'sc_settings_group',
+            array('foobarbaz')
+        );
 
     }
+
+    function plugin_section_text() {
+        echo "tra la la";
+    }
+
+    function threshold_callback() {
+        echo "trolololol";
+    }
+
+
+
+
+
+
+    function threshold_sanitize($input) {
+        $trimmed = trim($input);
+
+        if( !is_numeric($trimmed) || $trimmed > 100 || $trimmed < 0 ) {
+            $trimmed = 60;
+        }
+
+        return $trimmed;
+    }
+
+    function form_sanitize($str) {
+        $string = trim($str);
+
+        $pattern = '/^[\w]+[-]?+[\w]+$/';
+
+        if( !preg_match( $pattern, $string ) ) {
+            $string = 'commentform';
+        }
+
+        return $string;
+    }
+
 
 
 
@@ -141,6 +194,7 @@
         <div class="wrap">
             <form action="options.php" method="post">';
                 settings_fields( 'sc_settings_group' );
+
                 echo '<table class="form-table">
                     <tbody>
                         <tr valign="top">
