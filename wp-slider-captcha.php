@@ -204,8 +204,8 @@
                                     <legend class="screen-reader-text">
                                         <span>Threshold</span>
                                     </legend>
-                                    <label for="threshhold">
-                                        <input id="threshold" type="input" value="'. get_option( 'threshhold' ) .'" name="threshhold">
+                                    <label for="threshold">
+                                        <input id="threshold" type="input" value="'. get_option( 'threshold' ) .'" name="threshold">
                                         <p>
                                             <em>What percent point to slide past</em>
                                             <br>
@@ -223,7 +223,7 @@
                                         <span>Form ID</span>
                                     </legend>
                                     <label for="form-id">
-                                        <input id="form-id" type="input" value="'. get_option( 'form-id' ) .'" name="form-id">
+                                        <input id="form-id" type="input" value="'. get_option( 'form_id' ) .'" name="form-id">
                                         <p>
                                             <em>Default is "commentform" (without quotes)</em>
                                         </p>
